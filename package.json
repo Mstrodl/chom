@@ -1,0 +1,28 @@
+{
+  "name": "chom",
+  "version": "1.0.0",
+  "description": "A clientmod for Slack",
+  "main": "webPreload.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild webPreload.js --bundle --outfile=dist/webPreload.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mstrodl/chom.git"
+  },
+  "author": "Mary Strodl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mstrodl/chom/issues"
+  },
+  "homepage": "https://github.com/Mstrodl/chom#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.36",
+    "esbuild-plugin-import-glob": "^0.1.1"
+  },
+  "dependencies": {
+    "asar": "^3.1.0",
+    "node-fetch": "^2.6.7"
+  }
+}

@@ -1,0 +1,5 @@
+pnpm-debug.log
+dist
+.tern-port
+default-config.json
+node_modules
