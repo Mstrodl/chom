@@ -20,7 +20,6 @@
         `window.chomFunction=(function(__chom_module,__chom_exports,__chom_require){
 ${contents}
 })
-
 //# sourceURL=Webpack-Module-${moduleId}`
       );
     },

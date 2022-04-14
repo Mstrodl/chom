@@ -62,7 +62,6 @@ module.exports.inject = function (injectionPoint) {
         },
       },
     ];
-    console.log(schemes.concat(ourSchemes));
     return electron.protocol.registerSchemesAsPrivileged(
       schemes.concat(ourSchemes)
     );
@@ -114,8 +113,6 @@ module.exports.inject = function (injectionPoint) {
   require.cache[electronPath].exports = electronClone;
 
   console.log("Patched electron and applied cache");
-
-  console.log(protocol);
 
   electronClone.ipcMain.on("__chom_internal_preload", (event) => {
     event.sender.openDevTools();
