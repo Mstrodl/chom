@@ -8,6 +8,6 @@ esbuild
     bundle: true,
     outfile: path.join(__dirname, "dist", "webPreload.js"),
     plugins: [ImportGlobPlugin()],
-    watch: true,
+    watch: process.argv.slice(2).includes("--watch"),
   })
   .catch(() => process.exit(1));

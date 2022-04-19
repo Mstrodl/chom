@@ -84,6 +84,10 @@ export const webpackModules = {
           magicLogger.silly("Requiring...", ...args);
           return wrequire(...args);
         },
+        allModules: function () {
+          return wrequire.m;
+        },
+
         // Mostly exported for the purpose of accessing properties of require()
         // Really not recommended for using instead of require() as require() logs
         // for debugging purposes

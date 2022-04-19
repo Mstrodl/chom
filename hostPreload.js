@@ -71,7 +71,6 @@ module.exports.inject = function (injectionPoint) {
     {},
     {
       get(target, prop) {
-        console.trace("\n\n\nWE WANT\n\n\n", prop);
         if (prop == "registerSchemesAsPrivileged") {
           return registerSchemesAsPrivileged;
         }
