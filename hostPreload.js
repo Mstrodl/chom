@@ -6,28 +6,38 @@ const {EventEmitter} = require("events");
 const {Module} = require("module");
 
 module.exports.inject = function (injectionPoint) {
+  process.env.SLACK_DEVELOPER_MENU = "true";
+
   global.chom = {
     emitter: new EventEmitter(),
   };
+  const nodePreload = require.resolve("./nodePreload.js");
   class BrowserWindow extends electron.BrowserWindow {
     constructor(opts, ...rest) {
       if (!opts.webPreferences) opts.webPreferences = {};
 
-      console.log("Injected preload script on correct BrowserWindow", opts);
-      const oldPreloadPath = opts.webPreferences.preload;
-      opts.webPreferences.preload = require.resolve("./nodePreload.js");
-      opts.webPreferences.worldSafeExecuteJavaScript = true;
-
       chom.emitter.emit("interceptBrowserWindow", opts);
       super(opts, ...rest);
-      this.webContents.__chom_oldPreloadPath = oldPreloadPath;
       chom.emitter.emit("createdBrowserWindow", this);
       console.log("BrowserWindow has been created");
+
+      let preloads = this.webContents.session.getPreloads();
+      console.log("Current session's preloads", preloads);
+      const nodeIndex = preloads.indexOf(nodePreload);
+      if (nodeIndex == -1) {
+        preloads = [nodePreload, ...preloads];
+      } else if (nodeIndex != 0) {
+        preloads = [nodePreload, ...preloads.splice(nodeIndex, 1)];
+      }
+      if (nodeIndex != 0) {
+        this.webContents.session.setPreloads(preloads);
+      }
+      console.log("Attached preload to session!");
     }
   }
   Object.assign(BrowserWindow, electron.BrowserWindow);
   function registerSchemesAsPrivileged(schemes) {
-    console.log("PATCHING URL SCHEMES!!!");
+    console.log("PATCHING URL SCHEMES!!!", schemes);
     const ourSchemes = [
       {
         scheme: "https",
@@ -66,7 +76,7 @@ module.exports.inject = function (injectionPoint) {
       schemes.concat(ourSchemes)
     );
   }
-  registerSchemesAsPrivileged([]);
+  // registerSchemesAsPrivileged([]);
   const protocol = new Proxy(
     {},
     {
@@ -115,24 +125,12 @@ module.exports.inject = function (injectionPoint) {
 
   electronClone.ipcMain.on("__chom_internal_preload", (event) => {
     event.sender.openDevTools();
-    const preloadPath = event.sender.__chom_oldPreloadPath;
-    if (!preloadPath) {
-      throw new Error(
-        "Couldn't find a preload path on this window",
-        event,
-        event.sender
-      );
-    }
     const customPath = path.join(__dirname, "dist", "webPreload.js");
 
     event.returnValue = {
       custom: {
         content: fs.readFileSync(customPath, "utf8"),
         path: customPath,
-      },
-      original: {
-        content: fs.readFileSync(preloadPath, "utf8"),
-        path: preloadPath,
       },
     };
   });
