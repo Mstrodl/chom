@@ -124,7 +124,6 @@ module.exports.inject = function (injectionPoint) {
   console.log("Patched electron and applied cache");
 
   electronClone.ipcMain.on("__chom_internal_preload", (event) => {
-    event.sender.openDevTools();
     const customPath = path.join(__dirname, "dist", "webPreload.js");
 
     event.returnValue = {
